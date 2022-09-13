@@ -6,7 +6,6 @@ import (
 	"github.com/louistwiice/go/basicwithent/utils"
 )
 
-
 type service struct {
 	repo domain.UserRepository
 }
@@ -22,7 +21,7 @@ func (s *service) List() ([]*entity.UserDisplay, error) {
 }
 
 func (s *service) Create(u *entity.UserCreateUpdate) error {
-	hashedPassword, err := utils.HashWord(u.Password)
+	hashedPassword, err := utils.HashString(u.Password)
 	if err != nil {
 		return err
 	}
