@@ -4,11 +4,11 @@
 |Env name| Description|Example|
 |---|---|---|
 |SERVER_PORT|Application running port|:9000|
-|DB_ROOT_PASSWORD| Mysql root passwod||
-|DB_NAME| Mysql Database||
-|DB_USER| Mysql User||
-|DB_PASSWORD| Mysql password||
-|DB_HOST| Server IP host |localhost|
+|DB_ROOT_PASSWORD| Database root passwod||
+|DB_NAME| Database name||
+|DB_USER| Database User||
+|DB_PASSWORD| Database password||
+|DB_HOST| Database IP host |localhost|
 
 Other environment variable will go there in this file
 
