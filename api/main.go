@@ -22,7 +22,7 @@ func init() {
 	configs.Initialize()
 }
 
-func Open(source string) (*ent.Client, error) {
+func open(source string) (*ent.Client, error) {
     db, err := sql.Open("mysql", source)
     if err != nil {
         return nil, err
@@ -39,8 +39,8 @@ func main() {
 	log.Println("Server starting ...")
 
 	// Start by connecting to database
-	dbSource := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", configs.GetString("MYSQL_USER"), configs.GetString("MYSQL_PASSWORD"), configs.GetString("MYSQL_HOST"), configs.GetString("MYSQL_DATABASE"))
-	db, err := Open(dbSource)
+	dbSource := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", configs.GetString("DB_USER"), configs.GetString("DB_PASSWORD"), configs.GetString("DB_HOST"), configs.GetString("DB_NAME"))
+	db, err := open(dbSource)
 	if err!= nil {
 		log.Panic("Database error: ... ", err.Error())
 	}
