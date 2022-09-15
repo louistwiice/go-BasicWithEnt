@@ -9,6 +9,9 @@
 |DB_USER| Database User||
 |DB_PASSWORD| Database password||
 |DB_HOST| Database IP host |localhost|
+|TOKEN_HOUR_LIFESPAN| Duration of authentication token you in Login in Hour |1|
+|API_SECRET| Secret key that allow you to generate each login token |secret_1246@@@@!!/shghj_---QaZerftQWWWfz|
+|TOKEN_PREFIX| authorization token prefix used |Bearer|
 
 Other environment variable will go there in this file
 
