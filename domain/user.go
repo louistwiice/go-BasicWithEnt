@@ -8,7 +8,8 @@ import (
 type UserRepository interface {
 	List() ([]*entity.UserDisplay, error)
 	Create(u *entity.UserCreateUpdate) error
-	Get(id string) (*entity.UserDisplay, string, error)
+	GetByID(id string) (*entity.UserDisplay, string, error)
+	SearchUser(identifier string) (*entity.UserDisplay, string, error)
 	UpdateInfo(u *entity.UserCreateUpdate) error
 	UpdatePassword(u *entity.UserCreateUpdate) error
 	//Delete(id int) error
@@ -17,16 +18,19 @@ type UserRepository interface {
 type UserService interface {
 	List() ([]*entity.UserDisplay, error)
 	Create(u *entity.UserCreateUpdate) error
-	Get(id string) (*entity.UserDisplay, string, error)
+	GetByID(id string) (*entity.UserDisplay, string, error)
+	SearchUser(identifier string) (*entity.UserDisplay, string, error)
 	UpdateUser(u *entity.UserCreateUpdate) error
 	UpdatePassword(u *entity.UserCreateUpdate) error
 	//Delete(id int) error
 }
 
 type UserController interface {
-	ListUser(ctx *gin.Context)
-	CreateUser(ctx *gin.Context)
-	GetUser(ctx *gin.Context)
-	UpdateUser(ctx *gin.Context)
-	UpdatePassword(ctx *gin.Context)
+	Login(ctx *gin.Context)
+	
+	listUser(ctx *gin.Context)
+	createUser(ctx *gin.Context)
+	getUser(ctx *gin.Context)
+	updateUser(ctx *gin.Context)
+	updatePassword(ctx *gin.Context)
 }

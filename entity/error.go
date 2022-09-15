@@ -11,3 +11,5 @@ var ErrCanNotBeDeleted = errors.New("can not be deleted")
 var ErrNullField = errors.New("some fields should not be null")
 
 var ErrInvalidPassword = errors.New("password is empty or invalid")
+
+var  ErrUserNotFound = errors.New("user does not exist")

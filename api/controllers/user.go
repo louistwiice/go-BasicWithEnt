@@ -4,9 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/louistwiice/go/basicwithent/configs"
 	"github.com/louistwiice/go/basicwithent/domain"
 	"github.com/louistwiice/go/basicwithent/entity"
 	"github.com/louistwiice/go/basicwithent/utils"
+	"github.com/louistwiice/go/basicwithent/utils/jwt_token"
 )
 
 type controller struct {
@@ -19,7 +21,36 @@ func NewUserController(svc domain.UserService) *controller {
 	}
 }
 
-func (c *controller) ListUsers(ctx *gin.Context) {
+// Login is used to connect to the API
+func (c *controller) Login(ctx *gin.Context) {
+	var input entity.UserLogin
+
+	if err := ctx.ShouldBindJSON(&input); err !=nil {
+		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
+		return
+	}
+
+	user, hashed_password, err := c.service.SearchUser(input.Identifier)
+	if err!= nil {
+		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, entity.ErrUserNotFound.Error(), nil)
+		return
+	}
+
+	err = utils.CheckHashedString(input.Password, hashed_password)
+	if err != nil {
+		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
+		return
+	}
+
+	token, err := jwttoken.GenerateToken(user.ID)
+	if err != nil {
+		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
+		return
+	}
+	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "Login successfully", gin.H{"token": token, "duration": configs.GetInt("TOKEN_HOUR_LIFESPAN"), "token_prefix": configs.GetString("TOKEN_PREFIX")})
+}
+
+func (c *controller) listUsers(ctx *gin.Context) {
 	users, err := c.service.List()
 	if err != nil {
 		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
@@ -28,7 +59,7 @@ func (c *controller) ListUsers(ctx *gin.Context) {
 	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "successful", users)
 }
 
-func (c *controller) CreateUser(ctx *gin.Context) {
+func (c *controller) createUser(ctx *gin.Context) {
 	var user entity.UserCreateUpdate
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
@@ -43,10 +74,10 @@ func (c *controller) CreateUser(ctx *gin.Context) {
 	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "successful", user)
 }
 
-func (c *controller) GetUser(ctx *gin.Context) {
+func (c *controller) getUser(ctx *gin.Context) {
 	id := ctx.Param("id")
 	
-	user, _, err := c.service.Get(id)
+	user, _, err := c.service.GetByID(id)
 	if err != nil || user == nil {
 		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
 		return
@@ -54,7 +85,7 @@ func (c *controller) GetUser(ctx *gin.Context) {
 	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "successful", user)
 }
 
-func (c *controller) UpdateUser(ctx *gin.Context) {
+func (c *controller) updateUser(ctx *gin.Context) {
 	var data *entity.UserCreateUpdate
 	var id = ctx.Param("id")
 
@@ -63,7 +94,7 @@ func (c *controller) UpdateUser(ctx *gin.Context) {
 		return
 	}
 
-	user, _, err := c.service.Get(id)
+	user, _, err := c.service.GetByID(id)
 	if err != nil || user == nil {
 		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, entity.ErrNotFound.Error(), nil)
 		return
@@ -81,7 +112,7 @@ func (c *controller) UpdateUser(ctx *gin.Context) {
 
 
 // Update user password
-func (c *controller) UpdatePassword(ctx *gin.Context) {
+func (c *controller) updatePassword(ctx *gin.Context) {
 	var data entity.ChangePassword
 	var id = ctx.Param("id")
 
@@ -90,7 +121,7 @@ func (c *controller) UpdatePassword(ctx *gin.Context) {
 		return
 	}
 
-	user, password, err := c.service.Get(id)
+	user, password, err := c.service.GetByID(id)
 	if err != nil || user == nil {
 		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, entity.ErrNotFound.Error(), nil)
 		return
@@ -121,9 +152,9 @@ func (c *controller) UpdatePassword(ctx *gin.Context) {
 */
 
 func (c *controller) MakeUserHandlers(app *gin.RouterGroup) {
-	app.GET("", c.ListUsers)
-	app.POST("", c.CreateUser)
-	app.GET(":id", c.GetUser)
-	app.POST(":id", c.UpdateUser)
-	app.POST(":id/reset_password", c.UpdatePassword)
+	app.GET("", c.listUsers)
+	app.POST("", c.createUser)
+	app.GET(":id", c.getUser)
+	app.POST(":id", c.updateUser)
+	app.POST(":id/reset_password", c.updatePassword)
 }

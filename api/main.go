@@ -12,6 +12,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/louistwiice/go/basicwithent/api/controllers"
+	"github.com/louistwiice/go/basicwithent/api/middlewares"
 	"github.com/louistwiice/go/basicwithent/configs"
 	"github.com/louistwiice/go/basicwithent/ent"
 	"github.com/louistwiice/go/basicwithent/ent/migrate"
@@ -63,11 +64,16 @@ func main() {
 	userRepo := repository.NewUserClient(db)
 	userService := user.NewUserService(userRepo)
 	userController := controllers.NewUserController(userService)
-
+	middlwareController := middlewares.NewMiddlewareControllers()
+	
 	app := gin.Default()
 	api_v1 := app.Group("api/v1")
+	api_auth := app.Group("api/v1/auth")
+	api_auth.Use(middlwareController.JwAuthtMiddleware())
 
+	api_v1.POST("login", userController.Login)
 	userController.MakeUserHandlers(api_v1.Group("user/"))
+	userController.MakeUserHandlers(api_auth.Group("user/"))
 
 	app.Run(configs.GetString("SERVER_PORT"))
 }

@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"errors"
+
 	"github.com/gin-gonic/gin"
 	"github.com/louistwiice/go/basicwithent/entity"
 	"golang.org/x/crypto/bcrypt"
@@ -35,5 +37,10 @@ func HashString(password string) (string, error) {
 
 // Compare a cyphered word and a plain word
 func CheckHashedString(plain_word, hashed_word string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hashed_word), []byte(plain_word))
+	err := bcrypt.CompareHashAndPassword([]byte(hashed_word), []byte(plain_word))
+
+	if err ==  bcrypt.ErrMismatchedHashAndPassword {
+		return errors.New("incorrect password associated with identifier")
+	}
+	return err
 }

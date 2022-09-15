@@ -31,8 +31,9 @@ type ChangePassword struct {
 
 // Used by a user to login
 type UserLogin struct {
-	Identifier	string	`json:"identifier"`
-	Password	string	`json:"password"`
+	ID			string 	`json:"ID"`
+	Identifier	string	`json:"identifier" binding:"required"`
+	Password	string	`json:"password" binding:"required"`
 }
 
 // Func that will check non empty field on UserDisplay and update user

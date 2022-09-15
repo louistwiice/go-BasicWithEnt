@@ -62,7 +62,7 @@ func (c *UserClient) Create(u *entity.UserCreateUpdate) error {
 	return nil
 }
 
-func (c *UserClient) Get(id string) (*entity.UserDisplay, string, error) {
+func (c *UserClient) GetByID(id string) (*entity.UserDisplay, string, error) {
 	var u entity.UserDisplay
 	ctx := context.Background()
 	id_convert, err := uuid.Parse(id) // Convert the string to uuid type
@@ -127,4 +127,33 @@ func (c *UserClient) UpdatePassword(u *entity.UserCreateUpdate) error {
 		return err
 	}
 	return nil
+}
+
+//Search a user information by email or username
+func (c *UserClient) SearchUser(identifier string) (*entity.UserDisplay, string, error) {
+	var u entity.UserDisplay
+	ctx := context.Background()
+
+	resp := c.client.User.
+		Query().
+		Where(
+			user.Or(user.Email(identifier)),
+		).
+		AllX(ctx)
+
+	if len(resp) > 0 {
+		u.ID = resp[0].ID.String()
+		u.Email = resp[0].Email
+		u.FirstName = resp[0].FirstName
+		u.LastName = resp[0].LastName
+		u.IsActive = resp[0].IsActive
+		u.IsStaff = resp[0].IsStaff
+		u.IsSuperuser = resp[0].IsSuperuser
+		u.CreatedAt = resp[0].CreatedAt
+		u.UpdatedAt = resp[0].UpdatedAt	
+	} else {
+		return nil, "", entity.ErrNotFound
+	}
+	
+	return &u, resp[0].Password, nil
 }

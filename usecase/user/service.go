@@ -31,8 +31,8 @@ func (s *service) Create(u *entity.UserCreateUpdate) error {
 }
 
 // Retrieve a user
-func (s *service) Get(id string) (*entity.UserDisplay, string, error) {
-	u, password, err := s.repo.Get(id)
+func (s *service) GetByID(id string) (*entity.UserDisplay, string, error) {
+	u, password, err := s.repo.GetByID(id)
 	if err != nil {
 		return &entity.UserDisplay{}, "",entity.ErrNotFound
 	}
@@ -51,4 +51,8 @@ func (s *service) UpdatePassword(u *entity.UserCreateUpdate) error {
 	u.Password = hashed_password
 
 	return s.repo.UpdatePassword(u)
+}
+
+func (s *service) SearchUser(identifier string) (*entity.UserDisplay, string, error) {
+	return s.repo.SearchUser(identifier)
 }
