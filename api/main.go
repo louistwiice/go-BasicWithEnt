@@ -10,9 +10,11 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/louistwiice/go/basicwithent/api/controllers"
 	"github.com/louistwiice/go/basicwithent/configs"
 	"github.com/louistwiice/go/basicwithent/ent"
+	"github.com/louistwiice/go/basicwithent/ent/migrate"
 	"github.com/louistwiice/go/basicwithent/repository"
 	"github.com/louistwiice/go/basicwithent/usecase/user"
 )
@@ -22,6 +24,7 @@ func init() {
 	configs.Initialize()
 }
 
+// To create new database connection
 func open(source string) (*ent.Client, error) {
     db, err := sql.Open("mysql", source)
     if err != nil {
@@ -46,11 +49,16 @@ func main() {
 	}
 	defer db.Close()
 
+	// Run the automatic migration tool to create all schema resources.
 	ctx := context.Background()
-    // Run the automatic migration tool to create all schema resources.
-    if err := db.Schema.Create(ctx); err != nil {
-        log.Fatalf("failed creating schema resources: %v", err)
-    }
+	err = db.Schema.Create(
+        ctx, 
+        migrate.WithDropIndex(true),
+        migrate.WithDropColumn(true), 
+    )
+	if err!= nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
 
 	userRepo := repository.NewUserClient(db)
 	userService := user.NewUserService(userRepo)
@@ -62,5 +70,4 @@ func main() {
 	userController.MakeUserHandlers(api_v1.Group("user/"))
 
 	app.Run(configs.GetString("SERVER_PORT"))
-
 }
