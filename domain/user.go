@@ -12,7 +12,6 @@ type UserRepository interface {
 	SearchUser(identifier string) (*entity.UserDisplay, string, error)
 	UpdateInfo(u *entity.UserCreateUpdate) error
 	UpdatePassword(u *entity.UserCreateUpdate) error
-	//Delete(id int) error
 }
 
 type UserService interface {
@@ -22,12 +21,11 @@ type UserService interface {
 	SearchUser(identifier string) (*entity.UserDisplay, string, error)
 	UpdateUser(u *entity.UserCreateUpdate) error
 	UpdatePassword(u *entity.UserCreateUpdate) error
-	//Delete(id int) error
 }
 
 type UserController interface {
 	Login(ctx *gin.Context)
-	
+
 	listUser(ctx *gin.Context)
 	createUser(ctx *gin.Context)
 	getUser(ctx *gin.Context)

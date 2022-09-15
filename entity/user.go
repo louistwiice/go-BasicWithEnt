@@ -8,6 +8,7 @@ import (
 type UserDisplay struct {
 	ID				string		`json:"id"`
 	Email			string		`json:"email"`
+	Username		string		`json:"username" binding:"required"`
 	FirstName		string		`json:"first_name" binding:"required"`
 	LastName		string		`json:"last_name" binding:"required"`
 	IsActive		bool		`json:"is_active"`
@@ -31,7 +32,6 @@ type ChangePassword struct {
 
 // Used by a user to login
 type UserLogin struct {
-	ID			string 	`json:"ID"`
 	Identifier	string	`json:"identifier" binding:"required"`
 	Password	string	`json:"password" binding:"required"`
 }
@@ -43,6 +43,7 @@ func ValidateUpdate(user *UserCreateUpdate,u *UserDisplay) *UserCreateUpdate {
 	}
 
 	user.ID = u.ID
+	user.Username = u.Username
 	user.IsActive = u.IsActive
 	user.IsStaff = u.IsStaff
 	user.IsSuperuser = u.IsSuperuser

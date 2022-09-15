@@ -27,7 +27,7 @@ func (c *UserClient) List() ([]*entity.UserDisplay, error) {
 
 	err := c.client.User.
 		Query().
-		Select(user.FieldID, user.FieldEmail, user.FieldFirstName, user.FieldLastName, user.FieldIsActive, user.FieldIsStaff, user.FieldIsSuperuser, user.FieldCreatedAt, user.FieldUpdatedAt).
+		Select(user.FieldID, user.FieldEmail, user.FieldUsername, user.FieldFirstName, user.FieldLastName, user.FieldIsActive, user.FieldIsStaff, user.FieldIsSuperuser, user.FieldCreatedAt, user.FieldUpdatedAt).
 		Scan(ctx, &u)
 
 	if err != nil {
@@ -44,6 +44,7 @@ func (c *UserClient) Create(u *entity.UserCreateUpdate) error {
 	resp, err := c.client.User.
 		Create().
 		SetEmail(u.Email).
+		SetUsername(u.Username).
 		SetFirstName(u.FirstName).
 		SetLastName(u.LastName).
 		SetPassword(u.Password).
@@ -78,6 +79,7 @@ func (c *UserClient) GetByID(id string) (*entity.UserDisplay, string, error) {
 	if len(resp) > 0 {
 		u.ID = resp[0].ID.String()
 		u.Email = resp[0].Email
+		u.Username = resp[0].Username
 		u.FirstName = resp[0].FirstName
 		u.LastName = resp[0].LastName
 		u.IsActive = resp[0].IsActive
@@ -104,6 +106,7 @@ func (c *UserClient) UpdateInfo(u *entity.UserCreateUpdate) error {
 	_, err = c.client.User.UpdateOneID(id_convert).
 			SetFirstName(u.FirstName).
 			SetLastName(u.LastName).
+			SetUsername(u.Username).
 			SetEmail(u.Email).
 			Save(ctx)
 	if err != nil {
@@ -137,13 +140,14 @@ func (c *UserClient) SearchUser(identifier string) (*entity.UserDisplay, string,
 	resp := c.client.User.
 		Query().
 		Where(
-			user.Or(user.Email(identifier)),
+			user.Or(user.Email(identifier), user.Username(identifier)),
 		).
 		AllX(ctx)
 
 	if len(resp) > 0 {
 		u.ID = resp[0].ID.String()
 		u.Email = resp[0].Email
+		u.Username = resp[0].Username
 		u.FirstName = resp[0].FirstName
 		u.LastName = resp[0].LastName
 		u.IsActive = resp[0].IsActive

@@ -15,6 +15,8 @@ const (
 	FieldID = "id"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
+	// FieldUsername holds the string denoting the username field in the database.
+	FieldUsername = "username"
 	// FieldFirstName holds the string denoting the first_name field in the database.
 	FieldFirstName = "first_name"
 	// FieldLastName holds the string denoting the last_name field in the database.
@@ -39,6 +41,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldEmail,
+	FieldUsername,
 	FieldFirstName,
 	FieldLastName,
 	FieldPassword,
@@ -62,6 +65,8 @@ func ValidColumn(column string) bool {
 var (
 	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	EmailValidator func(string) error
+	// UsernameValidator is a validator for the "username" field. It is called by the builders before save.
+	UsernameValidator func(string) error
 	// FirstNameValidator is a validator for the "first_name" field. It is called by the builders before save.
 	FirstNameValidator func(string) error
 	// LastNameValidator is a validator for the "last_name" field. It is called by the builders before save.

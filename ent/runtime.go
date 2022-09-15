@@ -20,32 +20,36 @@ func init() {
 	userDescEmail := userFields[1].Descriptor()
 	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	user.EmailValidator = userDescEmail.Validators[0].(func(string) error)
+	// userDescUsername is the schema descriptor for username field.
+	userDescUsername := userFields[2].Descriptor()
+	// user.UsernameValidator is a validator for the "username" field. It is called by the builders before save.
+	user.UsernameValidator = userDescUsername.Validators[0].(func(string) error)
 	// userDescFirstName is the schema descriptor for first_name field.
-	userDescFirstName := userFields[2].Descriptor()
+	userDescFirstName := userFields[3].Descriptor()
 	// user.FirstNameValidator is a validator for the "first_name" field. It is called by the builders before save.
 	user.FirstNameValidator = userDescFirstName.Validators[0].(func(string) error)
 	// userDescLastName is the schema descriptor for last_name field.
-	userDescLastName := userFields[3].Descriptor()
+	userDescLastName := userFields[4].Descriptor()
 	// user.LastNameValidator is a validator for the "last_name" field. It is called by the builders before save.
 	user.LastNameValidator = userDescLastName.Validators[0].(func(string) error)
 	// userDescIsActive is the schema descriptor for is_active field.
-	userDescIsActive := userFields[5].Descriptor()
+	userDescIsActive := userFields[6].Descriptor()
 	// user.DefaultIsActive holds the default value on creation for the is_active field.
 	user.DefaultIsActive = userDescIsActive.Default.(bool)
 	// userDescIsStaff is the schema descriptor for is_staff field.
-	userDescIsStaff := userFields[6].Descriptor()
+	userDescIsStaff := userFields[7].Descriptor()
 	// user.DefaultIsStaff holds the default value on creation for the is_staff field.
 	user.DefaultIsStaff = userDescIsStaff.Default.(bool)
 	// userDescIsSuperuser is the schema descriptor for is_superuser field.
-	userDescIsSuperuser := userFields[7].Descriptor()
+	userDescIsSuperuser := userFields[8].Descriptor()
 	// user.DefaultIsSuperuser holds the default value on creation for the is_superuser field.
 	user.DefaultIsSuperuser = userDescIsSuperuser.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[8].Descriptor()
+	userDescCreatedAt := userFields[9].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[9].Descriptor()
+	userDescUpdatedAt := userFields[10].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

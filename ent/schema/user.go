@@ -19,6 +19,7 @@ func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
 		field.String("email").Match(regexp.MustCompile(`[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$`)).Unique(),
+		field.String("username").Match(regexp.MustCompile(`^[a-zA-Z0-9_.]*$`)).Unique(),
 		field.String("first_name").MaxLen(100),
 		field.String("last_name").MaxLen(255),
 		field.Text("password"),

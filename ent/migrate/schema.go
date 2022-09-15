@@ -12,6 +12,7 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "username", Type: field.TypeString, Unique: true},
 		{Name: "first_name", Type: field.TypeString, Size: 100},
 		{Name: "last_name", Type: field.TypeString, Size: 255},
 		{Name: "password", Type: field.TypeString, Size: 2147483647},
