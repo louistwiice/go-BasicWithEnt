@@ -2,25 +2,47 @@ package jwttoken
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/louistwiice/go/basicwithent/configs"
 )
 
 // GenerateToken generates token when user connects himself
-func GenerateToken(user_id string) (string, error) {
-	claims := jwt.MapClaims{}
-	claims["authorized"] = true
-	claims["user_id"] = user_id
-	claims["expire"] = time.Now().Add(time.Hour * time.Duration(configs.GetInt("TOKEN_HOUR_LIFESPAN"))).Unix()
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	log.Println(token.SignedString([]byte(configs.GetString("API_SECRET"))))
+func GenerateToken(user_id string) (map[string]string, error) {
+	accessclaims := make(jwt.MapClaims)  // access token claim
+	refreshclaims := make(jwt.MapClaims)  //refresh token claim
+	now_time := time.Now().UTC()
 
-	return token.SignedString([]byte(configs.GetString("API_SECRET")))
+	// Generate access token
+	accessclaims["authorized"] = true
+	accessclaims["sub"] = user_id
+	accessclaims["exp"] = now_time.Add(time.Hour * time.Duration(configs.GetInt("ACCESS_TOKEN_HOUR_LIFESPAN"))).Unix()
+	accessclaims["iat"] = now_time.Unix()
+	accessclaims["nbf"] = now_time.Unix()
+
+	accesstoken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessclaims)
+	at, err := accesstoken.SignedString([]byte(configs.GetString("ACCESS_TOKEN_SECRET")))
+	if err != nil {
+		return nil, err
+	}
+
+	// Generate refresh token
+	refreshclaims["authorized"] = true
+	refreshclaims["sub"] = user_id
+	refreshclaims["exp"] = now_time.Add(time.Hour * time.Duration(configs.GetInt("REFRESH_TOKEN_HOUR_LIFESPAN"))).Unix()
+	refreshclaims["iat"] = now_time.Unix()
+	refreshclaims["nbf"] = now_time.Unix()
+
+	refreshtoken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessclaims)
+	rt, err := refreshtoken.SignedString([]byte(configs.GetString("REFRESH_TOKEN_SECRET")))
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string]string{"access_token": at, "refresh_token": rt}, nil
 }
 
 // ExtractToken retrieves the token send by the user in every request
@@ -37,15 +59,15 @@ func ExtractToken(ctx *gin.Context) string {
 	return ""
 }
 
-// TokenValid check if a token is valid and not expired
-func TokenValid(ctx *gin.Context) error {
+// IsTokenValid check if a token is valid and not expired
+func IsTokenValid(ctx *gin.Context) error {
 	tokenString := ExtractToken(ctx)
 
 	token , err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(configs.GetString("API_SECRET")), nil
+		return []byte(configs.GetString("ACCESS_TOKEN_SECRET")), nil
 	})
 
 	if err != nil {
@@ -57,15 +79,14 @@ func TokenValid(ctx *gin.Context) error {
 	return err
 }
 
-// ExtractTokenID extracts the user ID on a Token
-func ExtractClaims(ctx *gin.Context) (jwt.MapClaims, error) {
+// ExtractTokenID extracts the user ID on a Token from Access token
+func ExtractClaimsFromAccess(ctx *gin.Context) (jwt.MapClaims, error) {
 	tokenString := ExtractToken(ctx)
-
 	token , err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(configs.GetString("API_SECRET")), nil
+		return []byte(configs.GetString("ACCESS_TOKEN_SECRET")), nil
 	})
 
 	if err != nil {
@@ -81,4 +102,46 @@ func ExtractClaims(ctx *gin.Context) (jwt.MapClaims, error) {
 	}
 
 	return nil, nil
+}
+
+// ExtractTokenID extracts the user ID on a Token from refresh token
+func ExtractClaimsFromRefresh(refresh_string string) (jwt.MapClaims, error) {
+	token , err := jwt.Parse(refresh_string, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(configs.GetString("REFRESH_TOKEN_SECRET")), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok && token.Valid {
+		if err != nil {
+			return nil, err
+		}
+		return claims, nil
+	}
+
+	return nil, nil
+}
+
+// Check refresh token
+func RefreshToken(ctx *gin.Context, refresh_string string) (map[string]string, error) {
+	rtoken , err := jwt.Parse(refresh_string, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(configs.GetString("REFRESH_TOKEN_SECRET")), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if refreshClaim, ok := rtoken.Claims.(jwt.MapClaims); ok && rtoken.Valid {
+		return GenerateToken(refreshClaim["sub"].(string))
+	}
+	return nil, err
 }

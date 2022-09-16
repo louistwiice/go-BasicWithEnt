@@ -21,12 +21,12 @@ func init() {
 	viper_set.AddConfigPath(".") // File location
 
 	err := viper_set.ReadInConfig()
-
 	if err != nil { 
 		panic(fmt.Errorf("error when reading config file: %w", err))
 	}
 
 	viper_set.AutomaticEnv()
+	
 }
 
 func Env(envName string, defaultValue ...interface{}) interface{} {

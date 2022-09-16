@@ -19,7 +19,7 @@ func NewMiddlewareControllers() *controller {
 
 func (cont *controller) JwAuthtMiddleware() gin.HandlerFunc {
 	return func (c *gin.Context)  {
-		err := jwttoken.TokenValid(c)
+		err := jwttoken.IsTokenValid(c)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized. Please Login first", "code": "401", "details": err.Error()})
 			return

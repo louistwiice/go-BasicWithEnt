@@ -17,6 +17,7 @@ import (
 	"github.com/louistwiice/go/basicwithent/ent"
 	"github.com/louistwiice/go/basicwithent/ent/migrate"
 	"github.com/louistwiice/go/basicwithent/repository"
+	"github.com/louistwiice/go/basicwithent/usecase/authentication"
 	"github.com/louistwiice/go/basicwithent/usecase/user"
 )
 
@@ -62,18 +63,24 @@ func main() {
 	}
 
 	userRepo := repository.NewUserClient(db)
+
 	userService := user.NewUserService(userRepo)
+	authService := authentication.NewAuthService(userRepo)
+
 	userController := controllers.NewUserController(userService)
+	authController := controllers.NewAuthController(authService)
 	middlwareController := middlewares.NewMiddlewareControllers()
 	
 	app := gin.Default()
-	api_v1 := app.Group("api/v1")
-	api_auth := app.Group("api/v1/auth")
-	api_auth.Use(middlwareController.JwAuthtMiddleware())
 
-	api_v1.POST("login", userController.Login)
+	api_v1 := app.Group("api/v1")
+	authController.MakeAuthHandlers(api_v1.Group("auth/"))
 	userController.MakeUserHandlers(api_v1.Group("user/"))
+
+	api_auth := app.Group("api/v1/in")
+	api_auth.Use(middlwareController.JwAuthtMiddleware())
 	userController.MakeUserHandlers(api_auth.Group("user/"))
 
 	app.Run(configs.GetString("SERVER_PORT"))
 }
+

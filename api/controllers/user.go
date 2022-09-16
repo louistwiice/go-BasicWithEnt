@@ -4,11 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/louistwiice/go/basicwithent/configs"
 	"github.com/louistwiice/go/basicwithent/domain"
 	"github.com/louistwiice/go/basicwithent/entity"
 	"github.com/louistwiice/go/basicwithent/utils"
-	"github.com/louistwiice/go/basicwithent/utils/jwt_token"
 )
 
 type controller struct {
@@ -19,35 +17,6 @@ func NewUserController(svc domain.UserService) *controller {
 	return &controller{
 		service: svc,
 	}
-}
-
-// Login is used to connect to the API
-func (c *controller) Login(ctx *gin.Context) {
-	var input entity.UserLogin
-
-	if err := ctx.ShouldBindJSON(&input); err !=nil {
-		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
-		return
-	}
-
-	user, hashed_password, err := c.service.SearchUser(input.Identifier)
-	if err!= nil {
-		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, entity.ErrUserNotFound.Error(), nil)
-		return
-	}
-
-	err = utils.CheckHashedString(input.Password, hashed_password)
-	if err != nil {
-		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
-		return
-	}
-
-	token, err := jwttoken.GenerateToken(user.ID)
-	if err != nil {
-		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
-		return
-	}
-	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "Login successfully", gin.H{"token": token, "duration": configs.GetInt("TOKEN_HOUR_LIFESPAN"), "token_prefix": configs.GetString("TOKEN_PREFIX")})
 }
 
 func (c *controller) listUsers(ctx *gin.Context) {
