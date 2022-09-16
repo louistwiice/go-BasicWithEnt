@@ -39,6 +39,7 @@ func (c *authcontroller) register(ctx *gin.Context) {
 
 // Login is used to connect to the API
 func (c *authcontroller) login(ctx *gin.Context) {
+	conf := configs.LoadConfigEnv()
 	var input entity.UserLogin
 
 	if err := ctx.ShouldBindJSON(&input); err !=nil {
@@ -68,13 +69,15 @@ func (c *authcontroller) login(ctx *gin.Context) {
 	ctx.SetCookie("refresh_token", tokens["refresh_token"], 1, "/", "localhost", false, true)
 	ctx.SetCookie("logged_in", "true", 1, "/", "localhost", false, false)
 
-	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "Login successfully", gin.H{"token": tokens, "duration": configs.GetInt("ACCESS_TOKEN_HOUR_LIFESPAN"), "token_prefix": configs.GetString("TOKEN_PREFIX")})
+	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "Login successfully", gin.H{"token": tokens, "duration": conf.AccessTokenHourLifespan, "token_prefix": conf.TokenPrefix})
 }
 
 func (c *authcontroller) refreshToken(ctx *gin.Context) {
 	type tokenReqBody struct {
 		RefreshToken string `json:"refresh_token" binding:"required"`
 	}
+
+	conf := configs.LoadConfigEnv()
 	tokenReq := tokenReqBody{}
 
 	if err := ctx.ShouldBindJSON(&tokenReq); err !=nil {
@@ -104,7 +107,7 @@ func (c *authcontroller) refreshToken(ctx *gin.Context) {
 	ctx.SetCookie("refresh_token", tokens["refresh_token"], 1, "/", "localhost", false, true)
 	ctx.SetCookie("logged_in", "true", 1, "/", "localhost", false, false)
 
-	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "refresh successfully", gin.H{"token": tokens, "duration": configs.GetInt("ACCESS_TOKEN_HOUR_LIFESPAN"), "token_prefix": configs.GetString("TOKEN_PREFIX")})
+	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "refresh successfully", gin.H{"token": tokens, "duration": conf.AccessTokenHourLifespan, "token_prefix": conf.TokenPrefix})
 	
 }
 

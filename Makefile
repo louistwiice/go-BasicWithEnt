@@ -15,3 +15,6 @@ generate-schema:
 # Start
 start-server:
 	go run api/main.go
+
+run-test:
+	go test ./...

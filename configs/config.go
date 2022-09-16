@@ -1,9 +1,9 @@
 package configs
 
 import (
-	"fmt"
+	"log"
 
-	"github.com/spf13/cast"
+	"github.com/louistwiice/go/basicwithent/entity"
 	"github.com/spf13/viper"
 )
 
@@ -13,47 +13,24 @@ func Initialize() {
 
 }
 
-func init() {
-	viper_set = viper.New()
+// Function called anytime we need to use setting on .env file
+func LoadConfigEnv() entity.Config {
+	var config entity.Config
 
-	viper_set.SetConfigName(".env") //Name fof the file
-	viper_set.SetConfigType("env")  // tye of file
-	viper_set.AddConfigPath(".") // File location
+	viper.SetConfigName(".env") //Name fof the file
+	viper.SetConfigType("env")  // tye of file
+	viper.AddConfigPath(".") // File location
+	viper.AutomaticEnv()
 
-	err := viper_set.ReadInConfig()
+	err := viper.ReadInConfig()
 	if err != nil { 
-		panic(fmt.Errorf("error when reading config file: %w", err))
+		log.Fatalf("Error while reading from .env: %v", err)
 	}
 
-	viper_set.AutomaticEnv()
-	
-}
-
-func Env(envName string, defaultValue ...interface{}) interface{} {
-	if len(defaultValue) > 0 {
-		return Get(envName, defaultValue[0])
+	err = viper.Unmarshal(&config)
+	if err != nil { 
+		log.Fatalf("Error while unmarshalling .env file: %v", err)
 	}
-	return Get(envName)
-}
 
-func Get(path string, defaultValue ...interface{}) interface{} {
-	if !viper_set.IsSet(path) {
-		if len(defaultValue) > 0 {
-			return defaultValue[0]
-		}
-		return nil
-	}
-	return viper_set.Get(path)
-}
-
-func GetInt(path string, defaultValue ...interface{}) int {
-	return cast.ToInt(Get(path, defaultValue...))
-}
-
-func GetString(path string, defaultValue ...interface{}) string {
-	return cast.ToString(Get(path, defaultValue...))
-}
-
-func GetBool(path string, defaultValue ...interface{}) bool {
-	return cast.ToBool(Get(path, defaultValue...))
+	return config
 }
