@@ -120,6 +120,26 @@ func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 	return uu
 }
 
+// SetLastAuthenticationAt sets the "last_authentication_at" field.
+func (uu *UserUpdate) SetLastAuthenticationAt(t time.Time) *UserUpdate {
+	uu.mutation.SetLastAuthenticationAt(t)
+	return uu
+}
+
+// SetNillableLastAuthenticationAt sets the "last_authentication_at" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLastAuthenticationAt(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetLastAuthenticationAt(*t)
+	}
+	return uu
+}
+
+// ClearLastAuthenticationAt clears the value of the "last_authentication_at" field.
+func (uu *UserUpdate) ClearLastAuthenticationAt() *UserUpdate {
+	uu.mutation.ClearLastAuthenticationAt()
+	return uu
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -307,6 +327,19 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldUpdatedAt,
 		})
 	}
+	if value, ok := uu.mutation.LastAuthenticationAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: user.FieldLastAuthenticationAt,
+		})
+	}
+	if uu.mutation.LastAuthenticationAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: user.FieldLastAuthenticationAt,
+		})
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -415,6 +448,26 @@ func (uuo *UserUpdateOne) SetNillableCreatedAt(t *time.Time) *UserUpdateOne {
 // SetUpdatedAt sets the "updated_at" field.
 func (uuo *UserUpdateOne) SetUpdatedAt(t time.Time) *UserUpdateOne {
 	uuo.mutation.SetUpdatedAt(t)
+	return uuo
+}
+
+// SetLastAuthenticationAt sets the "last_authentication_at" field.
+func (uuo *UserUpdateOne) SetLastAuthenticationAt(t time.Time) *UserUpdateOne {
+	uuo.mutation.SetLastAuthenticationAt(t)
+	return uuo
+}
+
+// SetNillableLastAuthenticationAt sets the "last_authentication_at" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLastAuthenticationAt(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetLastAuthenticationAt(*t)
+	}
+	return uuo
+}
+
+// ClearLastAuthenticationAt clears the value of the "last_authentication_at" field.
+func (uuo *UserUpdateOne) ClearLastAuthenticationAt() *UserUpdateOne {
+	uuo.mutation.ClearLastAuthenticationAt()
 	return uuo
 }
 
@@ -633,6 +686,19 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: user.FieldUpdatedAt,
+		})
+	}
+	if value, ok := uuo.mutation.LastAuthenticationAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: user.FieldLastAuthenticationAt,
+		})
+	}
+	if uuo.mutation.LastAuthenticationAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: user.FieldLastAuthenticationAt,
 		})
 	}
 	_node = &User{config: uuo.config}

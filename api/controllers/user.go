@@ -28,21 +28,6 @@ func (c *controller) listUsers(ctx *gin.Context) {
 	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "successful", users)
 }
 
-func (c *controller) createUser(ctx *gin.Context) {
-	var user entity.UserCreateUpdate
-	if err := ctx.ShouldBindJSON(&user); err != nil {
-		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
-		return
-	}
-
-	err := c.service.Create(&user)
-	if err != nil {
-		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
-		return
-	}
-	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "successful", user)
-}
-
 func (c *controller) getUser(ctx *gin.Context) {
 	id := ctx.Param("id")
 	
@@ -51,7 +36,7 @@ func (c *controller) getUser(ctx *gin.Context) {
 		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
-	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "successful", user)
+	utils.ResponseJSON(ctx, http.StatusOK, http.StatusFound, "successful", user)
 }
 
 func (c *controller) updateUser(ctx *gin.Context) {
@@ -76,7 +61,8 @@ func (c *controller) updateUser(ctx *gin.Context) {
 		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
-	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "successful", data)
+	response := entity.UserDisplayFormater(data)
+	utils.ResponseJSON(ctx, http.StatusOK, http.StatusAccepted, "successful", response)
 }
 
 
@@ -122,8 +108,7 @@ func (c *controller) updatePassword(ctx *gin.Context) {
 
 func (c *controller) MakeUserHandlers(app *gin.RouterGroup) {
 	app.GET("", c.listUsers)
-	app.POST("", c.createUser)
 	app.GET(":id", c.getUser)
-	app.POST(":id", c.updateUser)
+	app.PUT(":id", c.updateUser)
 	app.POST(":id/reset_password", c.updatePassword)
 }

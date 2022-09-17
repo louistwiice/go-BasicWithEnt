@@ -26,6 +26,11 @@ func (s *authservice) Create(u *entity.UserCreateUpdate) error {
 	return s.repo.Create(u)
 }
 
+// Service to update authentication date
+func (s *authservice) UpdateAuthenticationDate(u *entity.UserDisplay) error {
+	return s.repo.UpdateAuthenticationDate(u)
+}
+
 // Retrieve a user
 func (s *authservice) GetByID(id string) (*entity.UserDisplay, string, error) {
 	u, password, err := s.repo.GetByID(id)

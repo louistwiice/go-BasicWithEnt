@@ -37,6 +37,8 @@ type User struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// LastAuthenticationAt holds the value of the "last_authentication_at" field.
+	LastAuthenticationAt time.Time `json:"last_authentication_at,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -48,7 +50,7 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case user.FieldEmail, user.FieldUsername, user.FieldFirstName, user.FieldLastName, user.FieldPassword:
 			values[i] = new(sql.NullString)
-		case user.FieldCreatedAt, user.FieldUpdatedAt:
+		case user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldLastAuthenticationAt:
 			values[i] = new(sql.NullTime)
 		case user.FieldID:
 			values[i] = new(uuid.UUID)
@@ -133,6 +135,12 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				u.UpdatedAt = value.Time
 			}
+		case user.FieldLastAuthenticationAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field last_authentication_at", values[i])
+			} else if value.Valid {
+				u.LastAuthenticationAt = value.Time
+			}
 		}
 	}
 	return nil
@@ -190,6 +198,9 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(u.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("last_authentication_at=")
+	builder.WriteString(u.LastAuthenticationAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

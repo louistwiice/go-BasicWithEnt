@@ -16,6 +16,7 @@ type UserDisplay struct {
 	IsSuperuser		bool		`json:"is_superuser"`
 	CreatedAt		time.Time	`json:"created_at"`
 	UpdatedAt		time.Time	`json:"updated_at"`
+	LastAuthenticatedAt		time.Time	`json:"last_authentication_at"`
 }
 
 // use to create or update a user
@@ -49,6 +50,25 @@ func ValidateUpdate(user *UserCreateUpdate,u *UserDisplay) *UserCreateUpdate {
 	user.IsSuperuser = u.IsSuperuser
 	user.CreatedAt = u.CreatedAt
 	user.UpdatedAt = u.UpdatedAt
+	user.LastAuthenticatedAt = u.LastAuthenticatedAt
 
 	return user
+}
+
+func UserDisplayFormater(user *UserCreateUpdate) (u *UserDisplay) {
+	u = &UserDisplay{
+		ID: user.ID,
+		Email: user.Email,
+		Username: user.Username,
+		FirstName: user.FirstName,
+		LastName: user.LastName,
+		IsActive: user.IsActive,
+		IsStaff: user.IsStaff,
+		IsSuperuser: user.IsSuperuser,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		LastAuthenticatedAt: user.LastAuthenticatedAt,
+	}
+
+	return
 }

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	entsql "entgo.io/ent/dialect/sql"
+	logger "github.com/rs/zerolog/log"
 
 	"github.com/louistwiice/go/basicwithent/ent"
 )
@@ -20,6 +21,7 @@ func NewDBConnection() *ent.Client {
 	if err!= nil {
 		log.Panic("Database error: ... ", err.Error())
 	}
+	logger.Info().Msg("Database creation ...")
 	return db
 }
 

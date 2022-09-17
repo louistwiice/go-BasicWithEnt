@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	logger "github.com/rs/zerolog/log"
 
 	"github.com/louistwiice/go/basicwithent/api/controllers"
 	"github.com/louistwiice/go/basicwithent/api/middlewares"
@@ -22,7 +23,7 @@ func init() {
 }
 
 func main() {
-	log.Println("Server starting ...")
+	logger.Info().Msg("Server starting ...")
 	conf := configs.LoadConfigEnv()
 
 	// Start by connecting to database
@@ -59,6 +60,7 @@ func main() {
 	api_auth.Use(middlwareController.JwAuthtMiddleware())
 	userController.MakeUserHandlers(api_auth.Group("user/"))
 
+	logger.Info().Msg("Server ready to go ...")
 	app.Run(conf.ServerPort)
 }
 

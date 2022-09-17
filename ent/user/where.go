@@ -151,6 +151,13 @@ func UpdatedAt(v time.Time) predicate.User {
 	})
 }
 
+// LastAuthenticationAt applies equality check predicate on the "last_authentication_at" field. It's identical to LastAuthenticationAtEQ.
+func LastAuthenticationAt(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLastAuthenticationAt), v))
+	})
+}
+
 // EmailEQ applies the EQ predicate on the "email" field.
 func EmailEQ(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
@@ -813,6 +820,84 @@ func UpdatedAtLT(v time.Time) predicate.User {
 func UpdatedAtLTE(v time.Time) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// LastAuthenticationAtEQ applies the EQ predicate on the "last_authentication_at" field.
+func LastAuthenticationAtEQ(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLastAuthenticationAt), v))
+	})
+}
+
+// LastAuthenticationAtNEQ applies the NEQ predicate on the "last_authentication_at" field.
+func LastAuthenticationAtNEQ(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLastAuthenticationAt), v))
+	})
+}
+
+// LastAuthenticationAtIn applies the In predicate on the "last_authentication_at" field.
+func LastAuthenticationAtIn(vs ...time.Time) predicate.User {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldLastAuthenticationAt), v...))
+	})
+}
+
+// LastAuthenticationAtNotIn applies the NotIn predicate on the "last_authentication_at" field.
+func LastAuthenticationAtNotIn(vs ...time.Time) predicate.User {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldLastAuthenticationAt), v...))
+	})
+}
+
+// LastAuthenticationAtGT applies the GT predicate on the "last_authentication_at" field.
+func LastAuthenticationAtGT(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLastAuthenticationAt), v))
+	})
+}
+
+// LastAuthenticationAtGTE applies the GTE predicate on the "last_authentication_at" field.
+func LastAuthenticationAtGTE(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLastAuthenticationAt), v))
+	})
+}
+
+// LastAuthenticationAtLT applies the LT predicate on the "last_authentication_at" field.
+func LastAuthenticationAtLT(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLastAuthenticationAt), v))
+	})
+}
+
+// LastAuthenticationAtLTE applies the LTE predicate on the "last_authentication_at" field.
+func LastAuthenticationAtLTE(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLastAuthenticationAt), v))
+	})
+}
+
+// LastAuthenticationAtIsNil applies the IsNil predicate on the "last_authentication_at" field.
+func LastAuthenticationAtIsNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLastAuthenticationAt)))
+	})
+}
+
+// LastAuthenticationAtNotNil applies the NotNil predicate on the "last_authentication_at" field.
+func LastAuthenticationAtNotNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLastAuthenticationAt)))
 	})
 }
 

@@ -6,21 +6,21 @@ import (
 	"github.com/louistwiice/go/basicwithent/utils"
 )
 
-type service struct {
+type userservice struct {
 	repo domain.UserRepository
 }
 
-func NewUserService(r domain.UserRepository) *service {
-	return &service{
+func NewUserService(r domain.UserRepository) *userservice {
+	return &userservice{
 		repo: r,
 	}
 }
 
-func (s *service) List() ([]*entity.UserDisplay, error) {
+func (s *userservice) List() ([]*entity.UserDisplay, error) {
 	return s.repo.List()
 }
 
-func (s *service) Create(u *entity.UserCreateUpdate) error {
+func (s *userservice) Create(u *entity.UserCreateUpdate) error {
 	hashedPassword, err := utils.HashString(u.Password)
 	if err != nil {
 		return err
@@ -31,7 +31,7 @@ func (s *service) Create(u *entity.UserCreateUpdate) error {
 }
 
 // Retrieve a user
-func (s *service) GetByID(id string) (*entity.UserDisplay, string, error) {
+func (s *userservice) GetByID(id string) (*entity.UserDisplay, string, error) {
 	u, password, err := s.repo.GetByID(id)
 	if err != nil {
 		return &entity.UserDisplay{}, "",entity.ErrNotFound
@@ -39,11 +39,11 @@ func (s *service) GetByID(id string) (*entity.UserDisplay, string, error) {
 	return u, password, nil
 }
 
-func (s *service) UpdateUser(u *entity.UserCreateUpdate) error {
+func (s *userservice) UpdateUser(u *entity.UserCreateUpdate) error {
 	return s.repo.UpdateInfo(u)
 }
 
-func (s *service) UpdatePassword(u *entity.UserCreateUpdate) error {
+func (s *userservice) UpdatePassword(u *entity.UserCreateUpdate) error {
 	hashed_password, err := utils.HashString(u.Password)
 	if err != nil {
 		return err
@@ -53,6 +53,6 @@ func (s *service) UpdatePassword(u *entity.UserCreateUpdate) error {
 	return s.repo.UpdatePassword(u)
 }
 
-func (s *service) SearchUser(identifier string) (*entity.UserDisplay, string, error) {
+func (s *userservice) SearchUser(identifier string) (*entity.UserDisplay, string, error) {
 	return s.repo.SearchUser(identifier)
 }

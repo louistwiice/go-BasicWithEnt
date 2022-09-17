@@ -33,6 +33,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldLastAuthenticationAt holds the string denoting the last_authentication_at field in the database.
+	FieldLastAuthenticationAt = "last_authentication_at"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 )
@@ -50,6 +52,7 @@ var Columns = []string{
 	FieldIsSuperuser,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldLastAuthenticationAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

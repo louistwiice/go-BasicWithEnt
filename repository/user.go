@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/louistwiice/go/basicwithent/ent"
@@ -60,6 +61,7 @@ func (c *UserClient) Create(u *entity.UserCreateUpdate) error {
 	u.ID = resp.ID.String()
 	u.CreatedAt = resp.CreatedAt
 	u.UpdatedAt = resp.UpdatedAt
+	u.LastAuthenticatedAt = resp.LastAuthenticationAt
 	return nil
 }
 
@@ -87,6 +89,7 @@ func (c *UserClient) GetByID(id string) (*entity.UserDisplay, string, error) {
 		u.IsSuperuser = resp[0].IsSuperuser
 		u.CreatedAt = resp[0].CreatedAt
 		u.UpdatedAt = resp[0].UpdatedAt	
+		u.LastAuthenticatedAt = resp[0].LastAuthenticationAt	
 	} else {
 		return nil, "", entity.ErrNotFound
 	}
@@ -132,6 +135,23 @@ func (c *UserClient) UpdatePassword(u *entity.UserCreateUpdate) error {
 	return nil
 }
 
+// Update user authentication date
+func (c *UserClient) UpdateAuthenticationDate(u *entity.UserDisplay) error {
+	ctx := context.Background()
+	id_convert, err := uuid.Parse(u.ID) // Convert the string to uuid type
+	if err != nil {
+		return err
+	}
+
+	_, err = c.client.User.UpdateOneID(id_convert).
+			SetLastAuthenticationAt(time.Now()).
+			Save(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 //Search a user information by email or username
 func (c *UserClient) SearchUser(identifier string) (*entity.UserDisplay, string, error) {
 	var u entity.UserDisplay
@@ -155,6 +175,8 @@ func (c *UserClient) SearchUser(identifier string) (*entity.UserDisplay, string,
 		u.IsSuperuser = resp[0].IsSuperuser
 		u.CreatedAt = resp[0].CreatedAt
 		u.UpdatedAt = resp[0].UpdatedAt	
+		u.LastAuthenticatedAt = resp[0].LastAuthenticationAt	
+
 	} else {
 		return nil, "", entity.ErrNotFound
 	}

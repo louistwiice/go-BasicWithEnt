@@ -12,6 +12,7 @@ type UserRepository interface {
 	SearchUser(identifier string) (*entity.UserDisplay, string, error)
 	UpdateInfo(u *entity.UserCreateUpdate) error
 	UpdatePassword(u *entity.UserCreateUpdate) error
+	UpdateAuthenticationDate(u *entity.UserDisplay) error
 }
 
 type UserService interface {
@@ -22,24 +23,10 @@ type UserService interface {
 	UpdateUser(u *entity.UserCreateUpdate) error
 	UpdatePassword(u *entity.UserCreateUpdate) error
 }
-/*
-type AuthService interface {
-	Create(u *entity.UserCreateUpdate) error
-	GetByID(id string) (*entity.UserDisplay, string, error)
-	SearchUser(identifier string) (*entity.UserDisplay, string, error)
-}*/
 
 type UserController interface {
 	listUser(ctx *gin.Context)
-	createUser(ctx *gin.Context)
 	getUser(ctx *gin.Context)
 	updateUser(ctx *gin.Context)
 	updatePassword(ctx *gin.Context)
 }
-
-/*
-type AuthController interface {
-	register(ctx *gin.Context)
-	login(ctx *gin.Context)
-	refreshToken(ctx *gin.Context)
-}*/

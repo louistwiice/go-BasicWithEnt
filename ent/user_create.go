@@ -121,6 +121,20 @@ func (uc *UserCreate) SetNillableUpdatedAt(t *time.Time) *UserCreate {
 	return uc
 }
 
+// SetLastAuthenticationAt sets the "last_authentication_at" field.
+func (uc *UserCreate) SetLastAuthenticationAt(t time.Time) *UserCreate {
+	uc.mutation.SetLastAuthenticationAt(t)
+	return uc
+}
+
+// SetNillableLastAuthenticationAt sets the "last_authentication_at" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLastAuthenticationAt(t *time.Time) *UserCreate {
+	if t != nil {
+		uc.SetLastAuthenticationAt(*t)
+	}
+	return uc
+}
+
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(u uuid.UUID) *UserCreate {
 	uc.mutation.SetID(u)
@@ -405,6 +419,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if value, ok := uc.mutation.LastAuthenticationAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: user.FieldLastAuthenticationAt,
+		})
+		_node.LastAuthenticationAt = value
 	}
 	return _node, _spec
 }

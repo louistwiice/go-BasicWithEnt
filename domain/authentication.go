@@ -12,6 +12,7 @@ type AuthService interface {
 	Create(u *entity.UserCreateUpdate) error
 	GetByID(id string) (*entity.UserDisplay, string, error)
 	SearchUser(identifier string) (*entity.UserDisplay, string, error)
+	UpdateAuthenticationDate(u *entity.UserDisplay) error
 }
 
 type AuthController interface {

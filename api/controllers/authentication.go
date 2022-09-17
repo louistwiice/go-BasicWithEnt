@@ -34,7 +34,9 @@ func (c *authcontroller) register(ctx *gin.Context) {
 		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
-	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "successful", user)
+
+	response := entity.UserDisplayFormater(&user)
+	utils.ResponseJSON(ctx, http.StatusOK, http.StatusCreated, "successful", response)
 }
 
 // Login is used to connect to the API
@@ -68,6 +70,8 @@ func (c *authcontroller) login(ctx *gin.Context) {
 	ctx.SetCookie("access_token", tokens["access_token"], 1, "/", "localhost", false, true)
 	ctx.SetCookie("refresh_token", tokens["refresh_token"], 1, "/", "localhost", false, true)
 	ctx.SetCookie("logged_in", "true", 1, "/", "localhost", false, false)
+
+	go c.service.UpdateAuthenticationDate(user)
 
 	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "Login successfully", gin.H{"token": tokens, "duration": conf.AccessTokenHourLifespan, "token_prefix": conf.TokenPrefix})
 }
