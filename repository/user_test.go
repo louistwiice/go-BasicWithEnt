@@ -8,6 +8,7 @@ import (
 	"github.com/louistwiice/go/basicwithent/ent/enttest"
 	"github.com/louistwiice/go/basicwithent/ent/migrate"
 	"github.com/louistwiice/go/basicwithent/entity"
+	"github.com/louistwiice/go/basicwithent/mocks"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,23 +22,9 @@ func Test_Create(t *testing.T) {
 	defer client.Close()
 
 	repo := NewUserClient(client)
-	email := "mike@mail.com"
-	username := "mike"
 
 	// Test for Create user
-	userCreate := &entity.UserCreateUpdate {
-		UserDisplay: entity.UserDisplay{
-			ID: "783ed845-387f-4c50-9a64-fef701b4dbb8",
-			Email: email,
-			Username: username,
-			FirstName: "Mike",
-			LastName: "Spensor",
-			IsActive: false,
-			IsStaff: false,
-			IsSuperuser: false,
-		},
-		Password: "mike_password",
-	}
+	userCreate := mocks.GenerateFixture().UserCreate1
 
 	response_create := repo.Create(userCreate)
 	assert.Nil(t, response_create)
@@ -55,19 +42,7 @@ func Test_Get(t *testing.T) {
 	email := "mike@mail.com"
 	username := "mike"
 
-	userCreate := &entity.UserCreateUpdate {
-		UserDisplay: entity.UserDisplay{
-			ID: "783ed845-387f-4c50-9a64-fef701b4dbb8",
-			Email: email,
-			Username: username,
-			FirstName: "Mike",
-			LastName: "Spensor",
-			IsActive: false,
-			IsStaff: false,
-			IsSuperuser: false,
-		},
-		Password: "mike_password",
-	}
+	userCreate := mocks.GenerateFixture().UserCreate1
 	_ = repo.Create(userCreate)
 
 	// Test for GetByID
@@ -78,7 +53,7 @@ func Test_Get(t *testing.T) {
 	assert.Equal(t, userCreate.LastName, response_getbyID.LastName)
 	assert.Equal(t, userCreate.Username, response_getbyID.Username)
 
-	_, _, err = repo.GetByID("883ed845-387f-4c50-9a64-fef701b4dbb8") // This ID does not exist in database
+	_, _, err = repo.GetByID("483ed845-387f-4c50-9a64-fef701b4dbb8") // This ID does not exist in database
 	assert.NotNil(t, err)
 	assert.Equal(t, entity.ErrNotFound, err, "The ID does not exist. It should return not found")
 
@@ -113,22 +88,8 @@ func Test_List(t *testing.T) {
 	defer client.Close()
 
 	repo := NewUserClient(client)
-	email := "john@mail.com"
-	username := "john"
 
-	userCreate := &entity.UserCreateUpdate {
-		UserDisplay: entity.UserDisplay{
-			ID: "783ed845-387f-4c50-9a64-fef701b4dbb8",
-			Email: email,
-			Username: username,
-			FirstName: "John",
-			LastName: "Lewis",
-			IsActive: false,
-			IsStaff: false,
-			IsSuperuser: false,
-		},
-		Password: "john_password",
-	}
+	userCreate := mocks.GenerateFixture().UserCreate2
 
 	response_list, err := repo.List()
 	assert.Nil(t, err)
@@ -140,7 +101,7 @@ func Test_List(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, 1, len(response_list))
 	assert.Equal(t, userCreate.ID, response_list[0].ID)
-	assert.Equal(t, email, response_list[0].Email)
+	assert.Equal(t, userCreate.Email, response_list[0].Email)
 }
 
 func Test_UpdateInfo(t *testing.T) {
@@ -152,22 +113,8 @@ func Test_UpdateInfo(t *testing.T) {
 	defer client.Close()
 
 	repo := NewUserClient(client)
-	email := "john@mail.com"
-	username := "john"
 
-	userCreate := &entity.UserCreateUpdate {
-		UserDisplay: entity.UserDisplay{
-			ID: "783ed845-387f-4c50-9a64-fef701b4dbb8",
-			Email: email,
-			Username: username,
-			FirstName: "John",
-			LastName: "Lewis",
-			IsActive: false,
-			IsStaff: false,
-			IsSuperuser: false,
-		},
-		Password: "john_password",
-	}
+	userCreate := mocks.GenerateFixture().UserCreate2
 
 	err := repo.UpdateInfo(userCreate)
 	assert.NotNil(t, err, "It should return an error as the DB is empty")
@@ -188,22 +135,9 @@ func Test_UpdatePassword(t *testing.T) {
 	defer client.Close()
 
 	repo := NewUserClient(client)
-	old_password := "john_old_password"
 	new_password := "john_new_password"
 
-	userCreate := &entity.UserCreateUpdate {
-		UserDisplay: entity.UserDisplay{
-			ID: "783ed845-387f-4c50-9a64-fef701b4dbb8",
-			Email: "john@mail.com",
-			Username: "john",
-			FirstName: "John",
-			LastName: "Lewis",
-			IsActive: false,
-			IsStaff: false,
-			IsSuperuser: false,
-		},
-		Password: old_password,
-	}
+	userCreate := mocks.GenerateFixture().UserCreate2
 
 	err := repo.UpdatePassword(userCreate)
 	assert.NotNil(t, err, "It should return an error as the DB is empty")

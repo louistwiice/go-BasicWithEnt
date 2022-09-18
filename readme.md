@@ -21,24 +21,10 @@ Other environment variable will go there in this file
 ## Step 2: Start mysql container
 
 ``` text
-docker-compose up -d
-
-# Or
 make start-db
 ```
 
-## Step 3: Create tables
-``` text
-go generate ./ent
-
-# Or
-make generate-schema
-```
-
-## Step 4: Start application
+## Step 3: Start application
 ```text
-go run api/main.go
-
-# or
 make start-server
 ```
