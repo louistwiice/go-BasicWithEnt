@@ -8,13 +8,16 @@ stop-db:
 kill-db:
 	docker-compose down -v
 
-# Commands to to update database schema
+# Update database schema after an update
 generate-schema:
 	go generate ./ent
 
-# Start
-start-server:
+# Start server
+go-server:
 	go run api/main.go
 
-run-test:
+go-test:
 	go test ./...
+
+go-format: # Run go format to format files
+	go fmt ./...

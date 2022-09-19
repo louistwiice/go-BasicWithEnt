@@ -14,27 +14,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-/*
-func Test_listUsers(t *testing.T) {
-	fixture := mocks.GenerateFixture()
-	r := fixture.Server
-	u := fixture.UserList
-	service := user.MockUserService{}
-	service.On("List").Return(u, errors.New("eeee"))
-
-	controller := NewUserController(&service)
-
-	r.GET("/users", controller.listUsers)
-	req, _ := http.NewRequest(http.MethodGet, "/users", nil)
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-
-	var users []entity.UserDisplay
-	json.Unmarshal(w.Body.Bytes(), &users)
-
-	assert.Equal(t, "", users)
-}*/
-
 func Test_getUser(t *testing.T) {
 	t.Run("No error when ID exist", func(t *testing.T) {
 		fixture := mocks.GenerateFixture()
