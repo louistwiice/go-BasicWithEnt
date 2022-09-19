@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type response struct {
+type Response struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
@@ -16,7 +16,7 @@ type response struct {
 
 // Function used to parse API response
 func ResponseJSON(c *gin.Context, httpCode, errCode int, msg string, data interface{}) {
-	c.JSON(httpCode, response{
+	c.JSON(httpCode, Response{
 		Code:    errCode,
 		Message: msg,
 		Data:    data,

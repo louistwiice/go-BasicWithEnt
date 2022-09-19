@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/louistwiice/go/basicwithent/entity"
@@ -17,7 +16,6 @@ func Test_List(t *testing.T) {
 	
 	service := NewUserService(&repo)
 	response, err := service.List()
-	fmt.Println(err)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 2, len(response))
@@ -35,25 +33,32 @@ func Test_Create(t *testing.T) {
 }
 
 func Test_GetByID(t *testing.T) {
-	u := mocks.GenerateFixture().UserDisplay1
-	u_password := mocks.GenerateFixture().User1Password
-	repoNil := user.MockUserRepo{}
-	repoNil.On("GetByID", u.ID).Return(u, u_password, nil).Once()
-	
-	service := NewUserService(&repoNil)
-	response, password, err := service.GetByID(u.ID)
-	assert.Nil(t, err)
-	assert.Equal(t, u_password, password)
-	assert.Equal(t, u, response)
 
-	repoNotNil := user.MockUserRepo{}
-	repoNotNil.On("GetByID", u.ID).Return(&entity.UserDisplay{}, "", entity.ErrNotFound)
-	service = NewUserService(&repoNotNil)
-	response, password, err = service.GetByID(u.ID)
-	assert.NotNil(t, err)
-	assert.Equal(t, "", password)
-	assert.Equal(t, &entity.UserDisplay{}, response)
-	assert.Equal(t, entity.ErrNotFound, err)
+	t.Run("There should be no error when repo sent Nil", func(t *testing.T) {
+		u := mocks.GenerateFixture().UserDisplay1
+		u_password := mocks.GenerateFixture().User1Password
+		repo := user.MockUserRepo{}
+		repo.On("GetByID", u.ID).Return(u, u_password, nil).Once()
+		
+		service := NewUserService(&repo)
+		response, password, err := service.GetByID(u.ID)
+		assert.Nil(t, err)
+		assert.Equal(t, u_password, password)
+		assert.Equal(t, u, response)
+	})
+
+	t.Run("There should be an error when repo does not send a nil error", func(t *testing.T) {
+		u := mocks.GenerateFixture().UserDisplay1
+		repoNotNil := user.MockUserRepo{}
+		repoNotNil.On("GetByID", u.ID).Return(&entity.UserDisplay{}, "", entity.ErrNotFound)
+		
+		service := NewUserService(&repoNotNil)
+		response, password, err := service.GetByID(u.ID)
+		assert.NotNil(t, err)
+		assert.Equal(t, "", password)
+		assert.Equal(t, &entity.UserDisplay{}, response)
+		assert.Equal(t, entity.ErrNotFound, err)
+	})
 }
 
 func Test_UpdateUser(t *testing.T) {
@@ -77,23 +82,31 @@ func Test_UpdatePassword(t *testing.T) {
 }
 
 func Test_SearchUser(t *testing.T) {
-	u := mocks.GenerateFixture().UserDisplay1
-	u_password := mocks.GenerateFixture().User1Password
-	repoNil := user.MockUserRepo{}
-	repoNil.On("SearchUser", u.Email).Return(u, u_password, nil)
 
-	service := NewUserService(&repoNil)
-	response, password, err := service.SearchUser(u.Email)
-	assert.Nil(t, err)
-	assert.Equal(t, u_password, password)
-	assert.Equal(t, u, response)
+	t.Run("can search a user if is valid", func(t *testing.T) {
+		u := mocks.GenerateFixture().UserDisplay1
+		u_password := mocks.GenerateFixture().User1Password
+		repoNil := user.MockUserRepo{}
+		repoNil.On("SearchUser", u.Email).Return(u, u_password, nil)
 
-	repoNotNil := user.MockUserRepo{}
-	repoNotNil.On("SearchUser", u.Email).Return(&entity.UserDisplay{}, "", entity.ErrNotFound)
+		service := NewUserService(&repoNil)
+		response, password, err := service.SearchUser(u.Email)
+		assert.Nil(t, err)
+		assert.Equal(t, u_password, password)
+		assert.Equal(t, u, response)
+	})
 
-	service = NewUserService(&repoNotNil)
-	_, password, err = service.SearchUser(u.Email)
-	assert.NotNil(t, err)
-	assert.Equal(t, entity.ErrNotFound, err)
-	assert.Equal(t, "", password)
+	t.Run("can search a user if is valid", func(t *testing.T) {
+		u := mocks.GenerateFixture().UserDisplay1
+		repoNotNil := user.MockUserRepo{}
+		repoNotNil.On("SearchUser", u.Email).Return(&entity.UserDisplay{}, "", entity.ErrNotFound)
+	
+		service := NewUserService(&repoNotNil)
+		_, password, err := service.SearchUser(u.Email)
+		assert.NotNil(t, err)
+		assert.Equal(t, entity.ErrNotFound, err)
+		assert.Equal(t, "", password)
+	})	
+
+	
 }

@@ -1,6 +1,7 @@
 package mocks
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/louistwiice/go/basicwithent/entity"
 )
 
@@ -13,6 +14,7 @@ type fixtureMap struct {
 	UserDisplay2	*entity.UserDisplay
 	User2Password	string
 	UserList		[]*entity.UserDisplay
+	Server			*gin.Engine
 }
 
 func GenerateFixture() (f fixtureMap) {
@@ -53,6 +55,9 @@ func GenerateFixture() (f fixtureMap) {
 
 	f.UserList = append(f.UserList, f.UserDisplay1)
 	f.UserList = append(f.UserList, f.UserDisplay2)
+
+	gin.SetMode(gin.TestMode)
+	f.Server = gin.Default()
 
 	return
 }
