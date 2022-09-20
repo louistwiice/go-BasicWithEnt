@@ -21,10 +21,10 @@ Other environment variable will go there in this file
 ## Step 2: Start mysql container
 
 ``` text
-make start-db
+make db-start
 ```
 
 ## Step 3: Start application
 ```text
-make start-server
+make go-server
 ```

@@ -1,11 +1,11 @@
 # Commands related to the database
-start-db:
+db-start:
 	docker-compose up -d
 
-stop-db:
+db-stop:
 	docker-compose stop
 
-kill-db:
+db-kill:
 	docker-compose down -v
 
 # Update database schema after an update
