@@ -1,12 +1,12 @@
 # Commands related to the database
 db-start:
-	docker-compose up -d
+	docker-compose -f docker-compose.local.yml up -d
 
 db-stop:
-	docker-compose stop
+	docker-compose -f docker-compose.local.yml stop
 
 db-kill:
-	docker-compose down -v
+	docker-compose -f docker-compose.local.yml down -v
 
 # Update database schema after an update
 generate-schema:
@@ -21,3 +21,6 @@ go-test:
 
 go-format: # Run go format to format files
 	go fmt ./...
+
+go-build:
+	go build -o app api/*.go
