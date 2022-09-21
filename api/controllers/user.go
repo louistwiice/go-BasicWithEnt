@@ -101,6 +101,23 @@ func (c *controller) updatePassword(ctx *gin.Context) {
 	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "successful", "Password reset successfully")
 }
 
+func (c *controller) deleteUser(ctx *gin.Context) {
+	var data *entity.UserCreateUpdate
+	var id = ctx.Param("id")
+
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
+		return
+	}
+
+	err := c.service.Delete(id)
+	if err != nil {
+		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
+		return
+	}
+	utils.ResponseJSON(ctx, http.StatusOK, http.StatusAccepted, "successfully deleted", nil)
+}
+
 /*
 **
 **
@@ -111,4 +128,5 @@ func (c *controller) MakeUserHandlers(app *gin.RouterGroup) {
 	app.GET(":id", c.getUser)
 	app.PUT(":id", c.updateUser)
 	app.POST(":id/reset_password", c.updatePassword)
+	app.DELETE(":id", c.deleteUser)
 }

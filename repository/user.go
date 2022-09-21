@@ -152,6 +152,19 @@ func (c *UserClient) UpdateAuthenticationDate(u *entity.UserDisplay) error {
 	return nil
 }
 
+// Update user information, except password
+func (c *UserClient) Delete(id string) error {
+	ctx := context.Background()
+	id_convert, err := uuid.Parse(id) // Convert the string to uuid type
+	if err != nil {
+		return err
+	}
+
+	err = c.client.User.DeleteOneID(id_convert).
+			Exec(ctx)
+	return err
+}
+
 //Search a user information by email or username
 func (c *UserClient) SearchUser(identifier string) (*entity.UserDisplay, string, error) {
 	var u entity.UserDisplay

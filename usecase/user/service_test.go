@@ -106,7 +106,28 @@ func Test_SearchUser(t *testing.T) {
 		assert.NotNil(t, err)
 		assert.Equal(t, entity.ErrNotFound, err)
 		assert.Equal(t, "", password)
-	})	
+	})		
+}
 
+func Test_Delete(t *testing.T) {
+
+	t.Run("Return nil when repo returns nil", func(t *testing.T) {
+		u := mocks.GenerateFixture().UserDisplay1
+		repo := user.MockUserRepo{}
+		repo.On("Delete", u.ID).Return(nil)
+
+		service := NewUserService(&repo)
+		err := service.Delete(u.ID)
+		assert.Nil(t, err)
+	})
+
+	t.Run("Retrun an error when repo returns an erro", func(t *testing.T) {
+		u := mocks.GenerateFixture().UserDisplay1
+		repo := user.MockUserRepo{}
+		repo.On("Delete", u.ID).Return(entity.ErrNotFound)
 	
+		service := NewUserService(&repo)
+		err := service.Delete(u.ID)
+		assert.NotNil(t, err)
+	})		
 }

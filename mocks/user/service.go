@@ -105,3 +105,16 @@ func (m *MockUserService) SearchUser(identifier string) (*entity.UserDisplay, st
 
 	return r0, r1, r2
 }
+
+func (m *MockUserService) Delete(id string) error {
+	args := m.Called(id)
+
+	var r0 error
+	if rf, ok := args.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = args.Get(0).(error)
+	}
+
+	return r0
+}

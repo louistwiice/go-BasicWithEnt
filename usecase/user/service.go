@@ -56,3 +56,7 @@ func (s *userservice) UpdatePassword(u *entity.UserCreateUpdate) error {
 func (s *userservice) SearchUser(identifier string) (*entity.UserDisplay, string, error) {
 	return s.repo.SearchUser(identifier)
 }
+
+func (s *userservice) Delete(id string) error {
+	return s.repo.Delete(id)
+}

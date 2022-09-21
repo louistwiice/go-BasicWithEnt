@@ -91,3 +91,16 @@ func (m *MockUserRepo) SearchUser(identifier string) (*entity.UserDisplay, strin
 
 	return r0, r1, r2
 }
+
+func (m *MockUserRepo) Delete(id string) error {
+	args := m.Called(id)
+
+	var r0 error
+	if rf, ok := args.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = args.Error(0)
+	}
+
+	return r0
+}

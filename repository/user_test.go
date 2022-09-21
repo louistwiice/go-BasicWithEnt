@@ -147,3 +147,25 @@ func Test_UpdatePassword(t *testing.T) {
 	err = repo.UpdatePassword(userCreate)
 	assert.Nil(t, err)
 }
+
+func Test_Delete(t *testing.T) {
+	opts := []enttest.Option{
+        enttest.WithOptions(ent.Log(t.Log)),
+        enttest.WithMigrateOptions(migrate.WithGlobalUniqueID(true)),
+    }
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1", opts...)
+	defer client.Close()
+
+	repo := NewUserClient(client)
+
+	userCreate := mocks.GenerateFixture().UserCreate2
+
+	response_list, err := repo.List()
+	assert.Nil(t, err)
+	assert.Equal(t, 0, len(response_list))
+
+	_ = repo.Create(userCreate)
+
+	err = repo.Delete(userCreate.ID)
+	assert.Nil(t, err)
+}
