@@ -21,6 +21,18 @@ func NewAuthController(svc domain.AuthService) *authcontroller {
 	}
 }
 
+func (c *authcontroller) MakeAuthHandlers(app *gin.RouterGroup) {
+	app.POST("login", c.login)
+	app.POST("register", c.register)
+	app.POST("refresh", c.refreshToken)
+	app.GET("logout", c.logout)
+}
+
+/*
+**
+**
+*/
+
 // Register/Create a new user or account
 func (c *authcontroller) register(ctx *gin.Context) {
 	var user entity.UserCreateUpdate
@@ -122,17 +134,4 @@ func (c *authcontroller) logout(ctx *gin.Context) {
 
 	utils.ResponseJSON(ctx, http.StatusOK, http.StatusOK, "logout successfully", nil)
 
-}
-
-
-/*
-**
-**
-*/
-
-func (c *authcontroller) MakeAuthHandlers(app *gin.RouterGroup) {
-	app.POST("login", c.login)
-	app.POST("register", c.register)
-	app.POST("refresh", c.refreshToken)
-	app.GET("logout", c.logout)
 }

@@ -19,6 +19,20 @@ func NewUserController(svc domain.UserService) *controller {
 	}
 }
 
+func (c *controller) MakeUserHandlers(app *gin.RouterGroup) {
+	app.GET("", c.listUsers)
+	app.GET(":id", c.getUser)
+	app.PUT(":id", c.updateUser)
+	app.POST(":id/reset_password", c.updatePassword)
+	app.DELETE(":id", c.deleteUser)
+}
+
+/*
+**
+**
+**
+*/
+
 func (c *controller) listUsers(ctx *gin.Context) {
 	users, err := c.service.List()
 	if err != nil {
@@ -116,17 +130,4 @@ func (c *controller) deleteUser(ctx *gin.Context) {
 		return
 	}
 	utils.ResponseJSON(ctx, http.StatusOK, http.StatusAccepted, "successfully deleted", nil)
-}
-
-/*
-**
-**
-*/
-
-func (c *controller) MakeUserHandlers(app *gin.RouterGroup) {
-	app.GET("", c.listUsers)
-	app.GET(":id", c.getUser)
-	app.PUT(":id", c.updateUser)
-	app.POST(":id/reset_password", c.updatePassword)
-	app.DELETE(":id", c.deleteUser)
 }
