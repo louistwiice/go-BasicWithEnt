@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	logger "github.com/rs/zerolog/log"
 
-	"github.com/louistwiice/go/basicwithent/api/controllers"
+	"github.com/louistwiice/go/basicwithent/api/handlers/users"
 	"github.com/louistwiice/go/basicwithent/api/middlewares"
 	"github.com/louistwiice/go/basicwithent/configs"
 	"github.com/louistwiice/go/basicwithent/ent/migrate"
@@ -46,8 +46,8 @@ func main() {
 	userService := user.NewUserService(userRepo)
 	authService := authentication.NewAuthService(userRepo)
 
-	userController := controllers.NewUserController(userService)
-	authController := controllers.NewAuthController(authService)
+	userController := handler_users.NewUserController(userService)
+	authController := handler_users.NewAuthController(authService)
 	middlwareController := middlewares.NewMiddlewareControllers(authService)
 	
 	app := gin.Default()

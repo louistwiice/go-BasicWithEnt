@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/louistwiice/go/basicwithent/domain"
-	//"github.com/louistwiice/go/basicwithent/utils"
 	"github.com/louistwiice/go/basicwithent/utils/jwt_token"
 )
 
