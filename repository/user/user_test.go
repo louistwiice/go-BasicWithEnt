@@ -1,4 +1,4 @@
-package repository
+package repository_user
 
 import (
 	"testing"

@@ -2,13 +2,13 @@ package handler_users
 
 import (
 	"github.com/louistwiice/go/basicwithent/entity"
-	"github.com/louistwiice/go/basicwithent/repository"
+	"github.com/louistwiice/go/basicwithent/repository/user"
 	"github.com/louistwiice/go/basicwithent/usecase/authentication"
 	"github.com/louistwiice/go/basicwithent/usecase/user"
 )
 
 func NewUserRouters(server *entity.Routers) {
-	userRepo := repository.NewUserClient(server.Database)
+	userRepo := repository_user.NewUserClient(server.Database)
 
 	userService := user.NewUserService(userRepo)
 	authService := authentication.NewAuthService(userRepo)
