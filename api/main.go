@@ -12,9 +12,7 @@ import (
 	"github.com/louistwiice/go/basicwithent/api/middlewares"
 	"github.com/louistwiice/go/basicwithent/configs"
 	"github.com/louistwiice/go/basicwithent/ent/migrate"
-	"github.com/louistwiice/go/basicwithent/repository"
-	"github.com/louistwiice/go/basicwithent/usecase/authentication"
-	"github.com/louistwiice/go/basicwithent/usecase/user"
+	"github.com/louistwiice/go/basicwithent/entity"
 )
 
 // To load .env file
@@ -41,24 +39,23 @@ func main() {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 
-	userRepo := repository.NewUserClient(db)
-
-	userService := user.NewUserService(userRepo)
-	authService := authentication.NewAuthService(userRepo)
-
-	userController := handler_users.NewUserController(userService)
-	authController := handler_users.NewAuthController(authService)
-	middlwareController := middlewares.NewMiddlewareControllers(authService)
-	
 	app := gin.Default()
-
 	api_v1 := app.Group("api/v1")
-	authController.MakeAuthHandlers(api_v1.Group("auth/"))
-	userController.MakeUserHandlers(api_v1.Group("user/"))
+	api_restricted := app.Group("api/v1/in")
 
-	api_auth := app.Group("api/v1/in")
-	api_auth.Use(middlwareController.JwAuthtMiddleware())
-	userController.MakeUserHandlers(api_auth.Group("user/"))
+	router_base := &entity.RouterBase{
+		Database: db,
+		OpenApp: api_v1,
+	}
+	router := &entity.Routers{
+		RouterBase: *router_base,
+		RestrictedApp: api_restricted,
+	}
+
+	middlewareController := middlewares.NewMiddlewareRouters(router)
+	api_restricted.Use(middlewareController.JwAuthtMiddleware())
+
+	handler_users.NewUserRouters(router)
 
 	logger.Info().Msg("Server ready to go ...")
 	app.Run(conf.ServerPort)

@@ -19,19 +19,6 @@ func NewUserController(svc domain.UserService) *controller {
 	}
 }
 
-func (c *controller) MakeUserHandlers(app *gin.RouterGroup) {
-	app.GET("", c.listUsers)
-	app.GET(":id", c.getUser)
-	app.PUT(":id", c.updateUser)
-	app.POST(":id/reset_password", c.updatePassword)
-	app.DELETE(":id", c.deleteUser)
-}
-
-/*
-**
-**
-**
-*/
 
 func (c *controller) listUsers(ctx *gin.Context) {
 	users, err := c.service.List()
@@ -116,15 +103,15 @@ func (c *controller) updatePassword(ctx *gin.Context) {
 }
 
 func (c *controller) deleteUser(ctx *gin.Context) {
-	var data *entity.UserCreateUpdate
 	var id = ctx.Param("id")
 
-	if err := ctx.ShouldBindJSON(&data); err != nil {
-		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
+	user, _, err := c.service.GetByID(id)
+	if err != nil || user == nil {
+		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, entity.ErrNotFound.Error(), nil)
 		return
 	}
 
-	err := c.service.Delete(id)
+	err = c.service.Delete(id)
 	if err != nil {
 		utils.ResponseJSON(ctx, http.StatusOK, http.StatusBadRequest, err.Error(), nil)
 		return
