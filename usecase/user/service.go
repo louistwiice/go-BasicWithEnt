@@ -1,4 +1,4 @@
-package user
+package service_user
 
 import (
 	"github.com/louistwiice/go/basicwithent/domain"

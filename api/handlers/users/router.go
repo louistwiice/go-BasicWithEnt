@@ -10,8 +10,8 @@ import (
 func NewUserRouters(server *entity.Routers) {
 	userRepo := repository_user.NewUserClient(server.Database)
 
-	userService := user.NewUserService(userRepo)
-	authService := authentication.NewAuthService(userRepo)
+	userService := service_user.NewUserService(userRepo)
+	authService := service_authentication.NewAuthService(userRepo)
 	
 	userController := NewUserController(userService)
 	authController := NewAuthController(authService)

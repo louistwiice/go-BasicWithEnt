@@ -1,4 +1,4 @@
-package authentication
+package service_authentication
 
 import (
 	"github.com/louistwiice/go/basicwithent/domain"

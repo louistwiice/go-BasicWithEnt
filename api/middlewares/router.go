@@ -9,7 +9,7 @@ import (
 
 func NewMiddlewareRouters(server *entity.Routers) *controller {
 	userRepo := repository_user.NewUserClient(server.Database)
-	authService := authentication.NewAuthService(userRepo)
+	authService := service_authentication.NewAuthService(userRepo)
 
 	return NewMiddlewareControllers(authService)
 }
